@@ -1,0 +1,12 @@
+{
+    "name": "LoanIntent",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "git@github.com:alanphil2k01/LoanIntent.git",
+    "author": "alanphil2k01",
+    "license": "MIT",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ]
+}
