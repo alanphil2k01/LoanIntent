@@ -35,41 +35,6 @@ export default function Home() {
       interest: 3.5,
     },
   ];
-  const data = [
-    {
-      advertiser: "123456789",
-      completionRate: 98.8,
-      price: 1.056,
-      available: 336977.04,
-      minOrder: 2000,
-      maxOrder: 20000,
-      orders: 237,
-      time: "45 min",
-      approvalRate: 94.23,
-    },
-    {
-      advertiser: "123456789",
-      completionRate: 97.3,
-      price: 1.056,
-      available: 535757.96,
-      minOrder: 3000,
-      maxOrder: 30000,
-      orders: 432,
-      time: "30 min",
-      approvalRate: 98.32,
-    },
-    {
-      advertiser: "123456789",
-      completionRate: 85.0,
-      price: 1.04,
-      available: 1725094.4,
-      minOrder: 7400,
-      maxOrder: 7500,
-      orders: 64,
-      time: "60 min",
-      approvalRate: 99.77,
-    },
-  ];
 
   const [showNetworkDropdown, setShowNetworkDropdown] = useState(false);
   const [showCryptoDropdown, setShowCryptoDropdown] = useState(false);
