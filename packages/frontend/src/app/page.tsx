@@ -2,6 +2,39 @@
 import React, { useState, useRef, useEffect } from "react";
 
 export default function Home() {
+  const borrowerIntents = [
+    {
+      address: "0x123456789abcdef",
+      tokenAddress: "0xabcdef123456789",
+      value: 5000,
+      interest: 2.5,
+      nftId: 123,
+      nftAddress: "0xabc123nft456xyz",
+    },
+    {
+      address: "0x987654321fedcba",
+      tokenAddress: "0xfedcba987654321",
+      value: 10000,
+      interest: 3.2,
+      nftId: 456,
+      nftAddress: "0xdef456nft789uvw",
+    },
+  ];
+
+  const lenderIntents = [
+    {
+      address: "0xabc456789defghi",
+      tokenAddress: "0xghi789abc456def",
+      value: 15000,
+      interest: 2.8,
+    },
+    {
+      address: "0xdef123456ghi789",
+      tokenAddress: "0xjkl012mno345pqr",
+      value: 20000,
+      interest: 3.5,
+    },
+  ];
   const data = [
     {
       advertiser: "123456789",
@@ -123,19 +156,19 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-center mb-2">
           Collateralized Intent Creation and Transaction Execution
         </h1>
-        <p className="text-center text-sm mb-5">Powered by ERC-7521</p>
+        <p className="text-center text-sm mb-5">Powered by Intents</p>
         <div className="flex justify-center space-x-4">
           <button
             type="button"
             className="text-white px-14 bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
           >
-            Buy
+            Lend
           </button>
           <button
             type="button"
             className="text-white px-14 bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
           >
-            Sell
+            Borrow
           </button>
         </div>
 
@@ -222,9 +255,6 @@ export default function Home() {
                 </div>
               )}
             </div>
-            {/* <select className="relative inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-opacity-30 rounded-lg border border-gray-300 backdrop-blur-md hover:bg-opacity-50 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:border-blue-500 dark:bg-opacity-30 dark:hover:bg-opacity-50 dark:focus:ring-blue-800">
-              <option className="bg-gray-800">All payments</option>
-            </select> */}
             <div
               ref={networkDropdownRef}
               className="relative inline-block text-left"
@@ -277,68 +307,120 @@ export default function Home() {
               )}
             </div>
           </div>
+        </div>
 
+        <h2 className="text-2xl font-semibold mb-4">Borrower Intents</h2>
+        <div className="overflow-x-auto w-full">
+          <table className="min-w-full divide-y divide-gray-800 bg-gray-900 text-white backdrop-blur-md bg-opacity-30 border border-gray-800 rounded-lg shadow-lg">
+            <thead>
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                  Address
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                  Token Address
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                  Value
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                  Interest (%)
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                  NFT ID
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                  NFT Address
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-700">
+              {borrowerIntents.map((item, index) => (
+                <tr
+                  key={index}
+                  className="transition duration-300 ease-in-out hover:bg-gray-800 hover:shadow-md"
+                >
+                  <td className="px-4 py-4 text-sm flex items-center space-x-2 font-medium text-gray-200">
+                    <div className="h-8 w-8 flex items-center justify-center rounded-full bg-gray-700 text-white">
+                      <svg
+                        className="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z" />
+                      </svg>
+                    </div>
+                    <span>{item.address}</span>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-300">
+                    {item.tokenAddress}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-300">
+                    {item.value.toLocaleString()} USDT
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-300">
+                    {item.interest}%
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-300">
+                    {item.nftId}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-300">
+                    {item.nftAddress}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="mt-4">
+          <h2 className="text-2xl font-semibold mb-4">Lender Intents</h2>
           <div className="overflow-x-auto w-full">
-            <table className="min-w-full divide-y divide-gray-800 bg-gray-900 text-white backdrop-blur-md bg-opacity-30 border border-gray-800 rounded-lg">
+            <table className="min-w-full divide-y divide-gray-800 bg-gray-900 text-white backdrop-blur-md bg-opacity-30 border border-gray-800 rounded-lg shadow-lg">
               <thead>
                 <tr>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-300">
-                    Intents
+                  <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                    Address
                   </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-300">
-                    Price
+                  <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                    Token Address
                   </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-300">
-                    Available/Order Limit
+                  <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                    Value
                   </th>
-                  <th className="px-4 py-2 text-right text-sm font-semibold text-gray-300">
-                    Trade
+                  <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                    Interest (%)
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800">
-                {data.map((item, index) => (
-                  <tr key={index}>
-                    <td className="px-4 py-4 text-sm font-medium text-gray-200">
-                      <div className="flex items-center space-x-3">
-                        <div className="h-6 w-6 flex items-center justify-center rounded-full text-white">
-                          <svg
-                            className="h-4 w-4"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="font-bold">{item.advertiser}</div>
-                          <div className="text-xs text-gray-400">
-                            {item.orders} orders | {item.completionRate}%
-                            completion
-                          </div>
-                          <div className="text-xs text-gray-500 flex items-center space-x-2">
-                            <span>👍 {item.approvalRate}%</span>
-                            <span>⏱️ {item.time}</span>
-                          </div>
-                        </div>
+              <tbody className="divide-y divide-gray-700">
+                {lenderIntents.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="transition duration-300 ease-in-out hover:bg-gray-800 hover:shadow-md"
+                  >
+                    <td className="px-4 py-4 text-sm flex items-center space-x-2 font-medium text-gray-200">
+                      <div className="h-8 w-8 flex items-center justify-center rounded-full bg-gray-700 text-white">
+                        <svg
+                          className="h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z" />
+                        </svg>
                       </div>
+                      <span>{item.address}</span>
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-300">
-                      {item.price} USD
+                      {item.tokenAddress}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-300">
-                      {item.available.toLocaleString()} USDT
-                      <br />
-                      <span className="text-xs text-gray-500">
-                        ${item.minOrder.toLocaleString()} - $
-                        {item.maxOrder.toLocaleString()}
-                      </span>
+                      {item.value.toLocaleString()} USDT
                     </td>
-                    <td className="px-4 py-4 text-right">
-                      <button className="bg-red-500 text-white px-3 py-2 rounded-md text-sm">
-                        Sell USDT
-                      </button>
+                    <td className="px-4 py-4 text-sm text-gray-300">
+                      {item.interest}%
                     </td>
                   </tr>
                 ))}
