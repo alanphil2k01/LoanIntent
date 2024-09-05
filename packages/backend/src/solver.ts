@@ -42,8 +42,22 @@ async function getBorrowerIntents() {
 }
 
 async function findSolutions() {
-    console.log(await getLendersIntents());
-    console.log(await getBorrowerIntents());
+    const lenders = await getLendersIntents();
+    const borrowers = await getBorrowerIntents();
+    
+    const matchedPairs: Array<{ lender: any, borrower: any }> = [];
+    
+    for (const lender of lenders) {
+        for (const borrower of borrowers) {
+            if (lender.tokenAddress === borrower.tokenAddress && 
+                borrower.maxInterest >= lender.minInterest) {
+                matchedPairs.push({ lender, borrower });
+                borrowers.splice(borrowers.indexOf(borrower), 1);
+                break;
+            }
+        }
+    }
+    console.log('Matched Pairs:', matchedPairs);
 }
 
 export async function solveIntents() {
