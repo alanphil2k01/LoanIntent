@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 import {Script, console} from "forge-std/Script.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-
 contract CustomERC20 is ERC20 {
     constructor(string memory name, string memory symbol, uint256 initialSupply) ERC20(name, symbol) {
         _mint(msg.sender, initialSupply * (10 ** decimals()));
@@ -13,11 +12,11 @@ contract CustomERC20 is ERC20 {
 
 contract DeployERC20TokensScript is Script {
     function run() external {
-        uint privateKey = vm.envUint("PRIVATE_KEY");
+        uint256 privateKey = vm.envUint("PRIVATE_KEY");
 
         vm.startBroadcast(privateKey);
 
-        uint initialSupply = 500;
+        uint256 initialSupply = 500;
 
         new CustomERC20("AlphaToken", "ALPHA", initialSupply);
         new CustomERC20("BetaToken", "BETA", initialSupply);
