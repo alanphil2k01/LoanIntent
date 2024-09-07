@@ -1,15 +1,24 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useWaitForTransactionReceipt, type BaseError, useWriteContract } from 'wagmi';
+import erc721Abi from "common/ERC721/CustomNFT.json"
+import erc20Abi from "common/ERC20/CustomERC20.json"
+import { Hex } from 'viem';
+import { LoanIntentConfig } from '../contractConfig';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 function UserForm() {
   const [isBorrower, setIsBorrower] = useState(true);
   const [tokenAddress, setTokenAddress] = useState('');
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(0);
   const [interest, setInterest] = useState('');
   const [nftId, setNftId] = useState('');
   const [nftAddress, setNftAddress] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: hash, writeContract: writeContractToken, error } = useWriteContract()
+  const { writeContract } = useWriteContract()
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = {
       tokenAddress,
@@ -18,8 +27,61 @@ function UserForm() {
       ...(isBorrower && { nftId, nftAddress }),
     };
     console.log('Form Data:', formData);
+    if (isBorrower){
+        writeContractToken({
+            address: nftAddress as Hex,
+            abi: erc721Abi.abi,
+            functionName: 'approve',
+            args: [LoanIntentConfig.address, nftId],
+        })
+    } else {
+        writeContractToken({
+            address: tokenAddress as Hex,
+            abi: erc20Abi.abi,
+            functionName: 'approve',
+            args: [LoanIntentConfig.address, value * (10**18)],
+        })
+    }
     // Handle form submission logic here
   };
+
+   const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    })
+
+
+  useEffect(() => {
+      if (isConfirmed) {
+          if (isBorrower) {
+              writeContract({
+                  ...LoanIntentConfig,
+                  functionName: 'createBorrowerIntent',
+                  args: [
+                      tokenAddress,
+                      BigInt(Number(value) * (10**18)),
+                      interest,
+                      nftId,
+                      nftAddress
+                  ],
+              })
+    } else {
+              writeContract({
+                  ...LoanIntentConfig,
+                  functionName: 'createLenderIntent',
+                  args: [
+                      tokenAddress,
+                      BigInt(Number(value) * (10**18)),
+                      interest
+                  ],
+              })
+    }
+    }
+  }, [isConfirmed]);
+
+  useEffect(() => {
+      console.log("LoadingNFT");
+  }, [isConfirming]);
 
   return (
     <>
@@ -33,7 +95,7 @@ function UserForm() {
           </nav>
         </div>
         <div className="flex space-x-4">
-          <button className="bg-transparent border border-red-500 text-red-500 px-5 py-2 rounded-lg hover:bg-red-500 hover:text-white transition duration-300 ease-in-out shadow-sm">Connect Wallet</button>
+          <ConnectButton/>
         </div>
       </header>
 
@@ -119,6 +181,9 @@ function UserForm() {
               </button>
             </div>
           </form>
+        {error && (
+        <div>Error: {(error as BaseError).shortMessage || error.message}</div>
+      )}
         </div>
       </div>
     </>

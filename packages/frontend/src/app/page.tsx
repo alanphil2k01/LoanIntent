@@ -2,44 +2,36 @@
 import React, { useState, useRef, useEffect } from "react";
 import { LoanIntentAddress, ERC20Addresses, ERC721Addresses } from "common/constants";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useReadContract } from "wagmi";
+import {LoanIntentConfig} from "./contractConfig";
 
 
 export default function Home() {
 
+    const {data: borrowerIntentsData} = useReadContract({
+        ...LoanIntentConfig,
+        functionName: "getBorrowerIntents"
+    });
 
-  const borrowerIntents = [
-    {
-      address: "0x123456789abcdef",
-      tokenAddress: "0xabcdef123456789",
-      value: 5000,
-      interest: 2.5,
-      nftId: 123,
-      nftAddress: "0xabc123nft456xyz",
-    },
-    {
-      address: "0x987654321fedcba",
-      tokenAddress: "0xfedcba987654321",
-      value: 10000,
-      interest: 3.2,
-      nftId: 456,
-      nftAddress: "0xdef456nft789uvw",
-    },
-  ];
+    const borrowerIntents = borrowerIntentsData as any[] || []
 
-  const lenderIntents = [
-    {
-      address: "0xabc456789defghi",
-      tokenAddress: "0xghi789abc456def",
-      value: 15000,
-      interest: 2.8,
-    },
-    {
-      address: "0xdef123456ghi789",
-      tokenAddress: "0xjkl012mno345pqr",
-      value: 20000,
-      interest: 3.5,
-    },
-  ];
+    const {data: lenderIntentsData} = useReadContract({
+        ...LoanIntentConfig,
+        functionName: "getLenderIntents"
+    });
+
+    const lenderIntents = lenderIntentsData as any[] || []
+
+    const {data: solutionsData} = useReadContract({
+        ...LoanIntentConfig,
+        functionName: "getSolution"
+    });
+
+    const solutions = solutionsData as any[] || []
+    console.log("Borrower: ", borrowerIntents);
+    console.log("Lender: ",  lenderIntents);
+    console.log("Solutions: ",  solutions);
+
 
   const [showNetworkDropdown, setShowNetworkDropdown] = useState(false);
   const [showCryptoDropdown, setShowCryptoDropdown] = useState(false);
@@ -329,13 +321,13 @@ export default function Home() {
                     {item.value.toLocaleString()} USDT
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-300">
-                    {item.interest}%
+                    {Number(item.maxInterest)}%
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-300">
-                    {item.nftId}
+                    {Number(item.collateral.nftId)}
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-300">
-                    {item.nftAddress}
+                    {item.collateral.nftAddress}
                   </td>
                 </tr>
               ))}
@@ -389,7 +381,7 @@ export default function Home() {
                       {item.value.toLocaleString()} USDT
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-300">
-                      {item.interest}%
+                      {Number(item.minInterest)}%
                     </td>
                   </tr>
                 ))}

@@ -1,7 +1,7 @@
 "use client";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { WagmiProvider } from "wagmi";
+import { http, WagmiProvider } from "wagmi";
 import { config } from "./config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -12,7 +12,14 @@ import {
 } from "wagmi/chains";
 const inter = Inter({ subsets: ["latin"] });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      structuralSharing: false,
+    },
+  },
+});
+
 
 const config1 = getDefaultConfig({
   appName: "My RainbowKit App",
