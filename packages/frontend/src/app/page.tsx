@@ -4,7 +4,7 @@ import { LoanIntentAddress, ERC20Addresses, ERC721Addresses } from "common/const
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useReadContract } from "wagmi";
 import {LoanIntentConfig} from "./contractConfig";
-
+import transactionsTokens from '../../../foundry/broadcast/DeployERC20TokensScript.s.sol/31/run-latest.json'
 
 export default function Home() {
 
@@ -78,6 +78,16 @@ export default function Home() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+const findArgumentsForContract = (address:any) => {
+    const transactionsArray = transactionsTokens.transactions;
+    const transaction = transactionsArray.find(
+      (tx:any) => tx.contractAddress.toLowerCase() === address.toLowerCase()
+    );
+    return transaction ? transaction.arguments[0] : 'Not found';
+  };
+
+  // console.log(findArgumentsForContract("0x06c187541b6e34148ab86094edbf58ef5fdb6adf"))
 
   return (
 
@@ -293,6 +303,9 @@ export default function Home() {
                 <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
                   NFT Address
                 </th>
+                <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
@@ -315,10 +328,12 @@ export default function Home() {
                     <span>{item.address}</span>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-300">
-                    {item.tokenAddress}
+                    <span title={item.tokenAddress}>
+                        {`${item.tokenAddress.substring(0, 6)}...`}
+                      </span>
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-300">
-                    {item.value.toLocaleString()} USDT
+                  <td className="px-4 py-4 text-sm text-gray-300 flex">
+                     { Number(item.value / BigInt(1e18)).toLocaleString(undefined, { maximumFractionDigits: 2 }) } {findArgumentsForContract(item.tokenAddress)}
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-300">
                     {Number(item.maxInterest)}%
@@ -327,7 +342,18 @@ export default function Home() {
                     {Number(item.collateral.nftId)}
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-300">
-                    {item.collateral.nftAddress}
+                    <span title={item.collateral.nftAddress}>
+                        {`${item.collateral.nftAddress.substring(0, 6)}...`}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-300">
+                    {item.status === 0 && <span className="text-yellow-500">Pending</span>}
+                    {item.status === 1 && (
+                      <button className="bg-blue-500 px-7 py-4 hover:bg-blue-700 text-white text-xs py-1 px-2 rounded">
+                        Repay
+                      </button>
+                    )}
+                    {item.status === 3 && <span className="text-gray-500">Completed</span>}
                   </td>
                 </tr>
               ))}
@@ -353,6 +379,9 @@ export default function Home() {
                   <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
                     Interest (%)
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider text-gray-400">
+                  Status
+                </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -375,14 +404,25 @@ export default function Home() {
                       <span>{item.address}</span>
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-300">
-                      {item.tokenAddress}
+                      <span title={item.tokenAddress}>
+                        {`${item.tokenAddress.substring(0, 6)}...`}
+                      </span>
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-300">
-                      {item.value.toLocaleString()} USDT
+                    <td className="px-4 py-4 text-sm text-gray-300 flex">
+                      { Number(item.value / BigInt(1e18)).toLocaleString(undefined, { maximumFractionDigits: 2 }) } {findArgumentsForContract(item.tokenAddress)}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-300">
                       {Number(item.minInterest)}%
                     </td>
+                    <td className="px-4 py-4 text-sm text-gray-300">
+                    {item.status === 0 && <span className="text-yellow-500">Pending</span>}
+                    {item.status === 2 && (
+                      <button className="bg-green-500 px-7 py-4 hover:bg-green-700 text-white text-xs py-1 px-2 rounded">
+                        Claim
+                      </button>
+                    )}
+                    {item.status === 3 && <span className="text-gray-500">Completed</span>}
+                  </td>
                   </tr>
                 ))}
               </tbody>
