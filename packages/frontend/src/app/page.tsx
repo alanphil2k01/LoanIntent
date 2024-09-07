@@ -1,12 +1,15 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { LoanIntentAddress, ERC20Addresses, ERC721Addresses } from "common/constants";
+import { LoanIntentAddress, ERC20Addresses, ERC721Addresses, Hex } from "common/constants";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import {LoanIntentConfig} from "./contractConfig";
 import transactionsTokens from '../../../foundry/broadcast/DeployERC20TokensScript.s.sol/31/run-latest.json'
+import erc20Abi from "common/ERC20/CustomERC20.json"
 
 export default function Home() {
+  const { data: hash, writeContract: writeContractToken } = useWriteContract()
+  const { writeContract } = useWriteContract()
 
     const {data: borrowerIntentsData} = useReadContract({
         ...LoanIntentConfig,
@@ -24,13 +27,59 @@ export default function Home() {
 
     const {data: solutionsData} = useReadContract({
         ...LoanIntentConfig,
-        functionName: "getSolution"
+        functionName: "getSolutions"
     });
 
     const solutions = solutionsData as any[] || []
+
     console.log("Borrower: ", borrowerIntents);
     console.log("Lender: ",  lenderIntents);
     console.log("Solutions: ",  solutions);
+
+   const { isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    })
+
+
+    const [repaySolutionId, setRepaySolutionId] = useState(0);
+
+  useEffect(() => {
+      if (isConfirmed) {
+        writeContract({
+            ...LoanIntentConfig,
+            functionName: 'repay',
+            args: [
+                repaySolutionId
+            ],
+        })
+    }
+  }, [isConfirmed]);
+
+
+    const repay = async(tokenAddress: Hex, value: number, solution: any) => {
+        setRepaySolutionId(solution.id);
+
+        const interestAmount: number = (value * solution.interest) / 100;
+        const repaymentAmount = value + interestAmount;
+
+        writeContractToken({
+            address: tokenAddress as Hex,
+            abi: erc20Abi.abi,
+            functionName: 'approve',
+            args: [LoanIntentConfig.address, BigInt(repaymentAmount)],
+        })
+    }
+
+    const claimCollateral = async(solutionId: BigInt) => {
+        writeContract({
+            ...LoanIntentConfig,
+            functionName: 'claimCollaeral',
+            args: [
+                solutionId
+            ],
+        })
+    }
 
 
   const [showNetworkDropdown, setShowNetworkDropdown] = useState(false);
@@ -86,6 +135,11 @@ const findArgumentsForContract = (address:any) => {
     );
     return transaction ? transaction.arguments[0] : 'Not found';
   };
+
+  function findSolutionByLender(id: BigInt) {
+      const solution = solutions.find((item) => BigInt(item.lenderIntentId) == id)
+      return solution;
+  }
 
   // console.log(findArgumentsForContract("0x06c187541b6e34148ab86094edbf58ef5fdb6adf"))
 
@@ -348,12 +402,15 @@ const findArgumentsForContract = (address:any) => {
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-300">
                     {item.status === 0 && <span className="text-yellow-500">Pending</span>}
-                    {item.status === 1 && (
-                      <button className="bg-blue-500 px-7 py-4 hover:bg-blue-700 text-white text-xs py-1 px-2 rounded">
+                    {item.status === 1 && findSolutionByLender(BigInt(item.id))?.dueTimestamp >= new Date().valueOf() && (
+                      <button className="bg-blue-500 px-7 py-4 hover:bg-blue-700 text-white text-xs py-1 px-2 rounded"
+                      onClick={() => repay(item.tokenAddress, item.value, BigInt(findSolutionByLender(item.id)))}
+                      >
                         Repay
                       </button>
                     )}
                     {item.status === 3 && <span className="text-gray-500">Completed</span>}
+                    {item.status}
                   </td>
                 </tr>
               ))}
@@ -416,8 +473,10 @@ const findArgumentsForContract = (address:any) => {
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-300">
                     {item.status === 0 && <span className="text-yellow-500">Pending</span>}
-                    {item.status === 2 && (
-                      <button className="bg-green-500 px-7 py-4 hover:bg-green-700 text-white text-xs py-1 px-2 rounded">
+                    {item.status === 2 && findSolutionByLender(BigInt(item.id))?.dueTimestamp < new Date().valueOf() && (
+                      <button className="bg-green-500 px-7 py-4 hover:bg-green-700 text-white text-xs py-1 px-2 rounded"
+                      onClick={() => claimCollateral(BigInt(findSolutionByLender(item.id).id))}
+                      >
                         Claim
                       </button>
                     )}

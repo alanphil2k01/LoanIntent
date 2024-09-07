@@ -201,7 +201,7 @@ contract LoanIntent is Ownable, IERC721Receiver {
         IERC20 token = IERC20(borrowerIntent.tokenAddress);
         IERC721 nftContract = IERC721(borrowerIntent.collateral.nftAddress);
 
-        uint256 interestAmount = (borrowerIntent.value * borrowerIntent.maxInterest) / 100;
+        uint256 interestAmount = (borrowerIntent.value * solution.interest) / 100;
         uint256 repaymentAmount = borrowerIntent.value + interestAmount;
 
         require(
@@ -262,7 +262,7 @@ contract LoanIntent is Ownable, IERC721Receiver {
         lenderIntent.status = Status.Done;
         _lenderIntents[solution.lenderIntentId] = lenderIntent;
 
-        borrowerIntent.status = Status.Borrowed;
+        borrowerIntent.status = Status.Done;
         _borrowerIntents[solution.borrowerIntentId] = borrowerIntent;
     }
 
