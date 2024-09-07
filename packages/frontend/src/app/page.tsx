@@ -7,6 +7,12 @@ import {LoanIntentConfig} from "./contractConfig";
 import transactionsTokens from '../../../foundry/broadcast/DeployERC20TokensScript.s.sol/31/run-latest.json'
 import erc20Abi from "common/ERC20/CustomERC20.json"
 
+function compareTimeStamp(timestamp: any) {
+    const unixTimestampInSeconds = Math.floor(Date.now() / 1000);
+    const retVal = Number(timestamp) - unixTimestampInSeconds
+    return retVal;
+}
+
 export default function Home() {
   const { data: hash, writeContract: writeContractToken } = useWriteContract()
   const { writeContract } = useWriteContract()
@@ -32,9 +38,9 @@ export default function Home() {
 
     const solutions = solutionsData as any[] || []
 
-    console.log("Borrower: ", borrowerIntents);
-    console.log("Lender: ",  lenderIntents);
-    console.log("Solutions: ",  solutions);
+    // console.log("Borrower: ", borrowerIntents);
+    // console.log("Lender: ",  lenderIntents);
+    // console.log("Solutions: ",  solutions);
 
    const { isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
@@ -60,8 +66,8 @@ export default function Home() {
     const repay = async(tokenAddress: Hex, value: number, solution: any) => {
         setRepaySolutionId(solution.id);
 
-        const interestAmount: number = (value * solution.interest) / 100;
-        const repaymentAmount = value + interestAmount;
+        const interestAmount: number = (Number(value) * Number(solution.interest)) / 100;
+        const repaymentAmount = Number(value) + interestAmount;
 
         writeContractToken({
             address: tokenAddress as Hex,
@@ -71,7 +77,7 @@ export default function Home() {
         })
     }
 
-    const claimCollateral = async(solutionId: BigInt) => {
+    const claimCollateral = (solutionId: BigInt) => {
         writeContract({
             ...LoanIntentConfig,
             functionName: 'claimCollaeral',
@@ -402,9 +408,9 @@ const findArgumentsForContract = (address:any) => {
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-300">
                     {item.status === 0 && <span className="text-yellow-500">Pending</span>}
-                    {item.status === 1 && findSolutionByLender(BigInt(item.id))?.dueTimestamp >= new Date().valueOf() && (
+                    {item.status === 1 && compareTimeStamp(findSolutionByLender(BigInt(item.id))?.dueTimestamp) >= 0 && (
                       <button className="bg-blue-500 px-7 py-4 hover:bg-blue-700 text-white text-xs py-1 px-2 rounded"
-                      onClick={() => repay(item.tokenAddress, item.value, BigInt(findSolutionByLender(item.id)))}
+                      onClick={() => repay(item.tokenAddress, item.value, findSolutionByLender(item.id))}
                       >
                         Repay
                       </button>
@@ -472,7 +478,7 @@ const findArgumentsForContract = (address:any) => {
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-300">
                     {item.status === 0 && <span className="text-yellow-500">Pending</span>}
-                    {item.status === 2 && findSolutionByLender(BigInt(item.id))?.dueTimestamp < new Date().valueOf() && (
+                    {item.status === 2 && compareTimeStamp(findSolutionByLender(BigInt(item.id))?.dueTimestamp) < 0 && (
                       <button className="bg-green-500 px-7 py-4 hover:bg-green-700 text-white text-xs py-1 px-2 rounded"
                       onClick={() => claimCollateral(BigInt(findSolutionByLender(item.id).id))}
                       >
