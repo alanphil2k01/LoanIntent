@@ -4,9 +4,9 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { rootstockTestnet } from 'viem/chains'
 import loanIntentAbi from 'common/LoanIntent/LoanIntent.json'
 import { Status } from './types';
+import { LoanIntentAddress } from 'common/constants';
 
 const privateKey = process.env.PRIVATE_KEY as Hex;
-const contractAddress = process.env.CONTRACT_ADDRESS as Hex;
 
 const account = privateKeyToAccount(privateKey)
 
@@ -19,7 +19,7 @@ const client = createWalletClient({
 
 const contract = getContract({
     abi: loanIntentAbi.abi,
-    address: contractAddress,
+    address: LoanIntentAddress,
     client,
 })
 
