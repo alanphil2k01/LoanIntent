@@ -1,7 +1,12 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
+import { LoanIntentAddress, ERC20Addresses, ERC721Addresses } from "common/constants";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 
 export default function Home() {
+
+
   const borrowerIntents = [
     {
       address: "0x123456789abcdef",
@@ -83,6 +88,7 @@ export default function Home() {
   }, []);
 
   return (
+
     <div className="bg-gray-900 text-white min-h-screen">
       <header className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-gray-800 to-black shadow-lg">
         <div className="flex items-center space-x-6">
@@ -111,9 +117,7 @@ export default function Home() {
           </nav>
         </div>
         <div className="flex space-x-4">
-          <button className="bg-transparent border border-red-500 text-red-500 px-5 py-2 rounded-lg hover:bg-red-500 hover:text-white transition duration-300 ease-in-out shadow-sm">
-            Connect Wallet
-          </button>
+          <ConnectButton/>
         </div>
       </header>
 
@@ -142,7 +146,7 @@ export default function Home() {
             <div className="relative inline-flex items-center">
               <input
                 type="text"
-                placeholder="Enter amount"
+                placeholder="Enter address"
                 className="w-full px-5 py-2.5 text-sm font-medium text-white bg-opacity-30 rounded-lg border border-gray-300 backdrop-blur-md hover:bg-opacity-50 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-black border-blue-800 dark:bg-opacity-30 dark:hover:bg-opacity-50 dark:focus:ring-blue-800 pl-10 pr-12"
               />
               <svg
@@ -213,7 +217,7 @@ export default function Home() {
                         href="#"
                         className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
-                        BTC
+                        TRBTC
                       </a>
                     </li>
                   </ul>
@@ -264,7 +268,7 @@ export default function Home() {
                         href="#"
                         className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
-                        Arbitrium
+                        RootStock testnet
                       </a>
                     </li>
                   </ul>
