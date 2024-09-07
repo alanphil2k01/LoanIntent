@@ -114,7 +114,7 @@ contract LoanIntent is Ownable, IERC721Receiver {
         require(token.allowance(msg.sender, address(this)) >= value, "Not enough tokens approved by lender");
 
         LenderIntent memory newLenderIntent = LenderIntent({
-            id: _borrowerCount,
+            id: _lenderCount,
             owner: msg.sender,
             tokenAddress: tokenAddress,
             value: value,

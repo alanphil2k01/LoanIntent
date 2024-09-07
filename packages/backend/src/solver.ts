@@ -58,6 +58,29 @@ async function findSolutions() {
         }
     }
     console.log('Matched Pairs:', matchedPairs);
+    await sendSolutions(matchedPairs);
+}
+
+async function sendSolutions(matchedPairs: Array<{ lender: any, borrower: any }>) {
+    if (matchedPairs.length <= 0) {
+        return;
+    }
+    matchedPairs.forEach(async ({lender, borrower}) => {
+        try {
+            const { request } = await client.simulateContract({
+                address: contract.address,
+                abi: contract.abi,
+                functionName: "solve",
+                args: [
+                    BigInt(borrower.id),
+                    BigInt(lender.id)
+                ]
+            })
+            await client.writeContract(request)
+        } catch (error) {
+            console.log(error);
+        }
+    })
 }
 
 export async function solveIntents() {
