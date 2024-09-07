@@ -410,7 +410,6 @@ const findArgumentsForContract = (address:any) => {
                       </button>
                     )}
                     {item.status === 3 && <span className="text-gray-500">Completed</span>}
-                    {item.status}
                   </td>
                 </tr>
               ))}

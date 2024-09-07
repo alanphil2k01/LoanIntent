@@ -57,14 +57,16 @@ async function findSolutions() {
             }
         }
     }
-    console.log('Matched Pairs:', matchedPairs);
     await sendSolutions(matchedPairs);
 }
 
 async function sendSolutions(matchedPairs: Array<{ lender: any, borrower: any }>) {
     if (matchedPairs.length <= 0) {
+        console.log("### No Matches Found ###");
         return;
     }
+    let errorCount = 0;
+    console.log("#### Sending Sollutions " + matchedPairs.length + " ###");
     matchedPairs.forEach(async ({lender, borrower}) => {
         try {
             const { request } = await client.simulateContract({
@@ -76,9 +78,11 @@ async function sendSolutions(matchedPairs: Array<{ lender: any, borrower: any }>
                     BigInt(lender.id)
                 ]
             })
-            await client.writeContract(request)
-        } catch (error) {
-            console.log(error);
+            const data = await client.writeContract(request)
+            console.log("Success: " + data);
+        } catch (error: any) {
+            errorCount += 1;
+            console.log("Error #" + errorCount, ":", error.details);
         }
     })
 }

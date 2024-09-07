@@ -86,7 +86,7 @@ contract LoanIntent is Ownable, IERC721Receiver {
         require(nftContract.ownerOf(nftId) == msg.sender, "Not owner of the NFT");
         require(
             nftContract.getApproved(nftId) == address(this) || nftContract.isApprovedForAll(msg.sender, address(this)),
-            "Not enough tokens approved by lender"
+            "NFT not approved by borrower"
         );
 
         Collateral memory collateral = Collateral({nftId: nftId, nftAddress: nftAddress});
@@ -152,18 +152,18 @@ contract LoanIntent is Ownable, IERC721Receiver {
         IERC721 nftContract = IERC721(nftAddress);
 
         // Verify lender tokens
-        require(token.allowance(msg.sender, address(this)) >= value, "Not enough tokens approved by lender");
+        require(token.allowance(lender.owner, address(this)) >= value, "Not enough tokens approved by lender");
         require(token.balanceOf(lender.owner) >= value, "Insufficient Balance for lender");
 
         // Verify borrower collateral
-        require(nftContract.ownerOf(nftId) == msg.sender, "Not owner of the NFT");
+        require(nftContract.ownerOf(nftId) == borrower.owner, "Not owner of the NFT");
         require(
-            nftContract.getApproved(nftId) == address(this) || nftContract.isApprovedForAll(msg.sender, address(this)),
-            "Not enough tokens approved by lender"
+            nftContract.getApproved(nftId) == address(this) || nftContract.isApprovedForAll(borrower.owner, address(this)),
+            "NFT not approved by owner"
         );
 
         token.transferFrom(lender.owner, borrower.owner, value);
-        nftContract.safeTransferFrom(msg.sender, address(this), nftId);
+        nftContract.safeTransferFrom(borrower.owner, address(this), nftId);
 
         lender.status = Status.Lended;
         _lenderIntents[lenderId] = lender;
@@ -215,7 +215,7 @@ contract LoanIntent is Ownable, IERC721Receiver {
         lenderIntent.status = Status.Done;
         _lenderIntents[solution.lenderIntentId] = lenderIntent;
 
-        borrowerIntent.status = Status.Borrowed;
+        borrowerIntent.status = Status.Done;
         _borrowerIntents[solution.borrowerIntentId] = borrowerIntent;
     }
 
@@ -236,7 +236,7 @@ contract LoanIntent is Ownable, IERC721Receiver {
     function cancelLenderIntent(uint256 lenderIntentId) external {
         LenderIntent memory lenderIntent = _lenderIntents[lenderIntentId];
 
-        require(lenderIntent.owner == msg.sender, "Not the borrwer");
+        require(lenderIntent.owner == msg.sender, "Not the lender");
         require(lenderIntent.status == Status.Pending, "Invalid status");
 
         lenderIntent.status = Status.Canceled;
@@ -253,7 +253,7 @@ contract LoanIntent is Ownable, IERC721Receiver {
         require(borrowerIntent.status == Status.Borrowed, "Invalid borrower status");
         require(lenderIntent.status == Status.Lended, "Invalid lender status");
 
-        require(borrowerIntent.owner == msg.sender, "Not the borrower");
+        require(lenderIntent.owner == msg.sender, "Not the borrower");
 
         IERC721 nftContract = IERC721(borrowerIntent.collateral.nftAddress);
 
