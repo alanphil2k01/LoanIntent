@@ -16,7 +16,7 @@ contract DeployERC20TokensScript is Script {
 
         vm.startBroadcast(privateKey);
 
-        uint256 initialSupply = 500;
+        uint256 initialSupply = 10000;
 
         new CustomERC20("AlphaToken", "ALPHA", initialSupply);
         new CustomERC20("BetaToken", "BETA", initialSupply);

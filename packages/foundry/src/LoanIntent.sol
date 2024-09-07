@@ -71,6 +71,10 @@ contract LoanIntent is Ownable, IERC721Receiver {
         return _lenderIntents;
     }
 
+    function getSolutions() external view returns (Solution[] memory solutions) {
+        return _solutions;
+    }
+
     function createBorrowerIntent(
         address tokenAddress,
         uint256 value,
@@ -169,8 +173,9 @@ contract LoanIntent is Ownable, IERC721Receiver {
 
         uint256 dueTimestamp = block.timestamp + _loanDuration;
 
+        uint256 solutionId = _solutionCount;
         Solution memory solution = Solution({
-            id: _solutionCount,
+            id: solutionId,
             borrowerIntentId: borrowerId,
             lenderIntentId: lenderId,
             interest: interest,

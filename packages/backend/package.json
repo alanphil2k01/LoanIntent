@@ -9,6 +9,7 @@
         "dev": "nodemon"
     },
     "dependencies": {
+        "common": "1.0.00",
         "dotenv": "^16.4.5",
         "express": "^4.19.2",
         "viem": "^2.21.2"

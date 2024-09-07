@@ -1,0 +1,10 @@
+{
+  "name": "foundry",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+      "deployERC20Tokens": "./runForgeScript.sh ./script/DeployERC20TokensScript.s.sol:DeployERC20TokensScript",
+      "deployLoanIntent": "./runForgeScript.sh ./script/DeployLoanIntentScript.s.sol"
+  }
+}

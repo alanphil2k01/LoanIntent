@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { createWalletClient, getContract, Hex, http, publicActions } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { localhost } from 'viem/chains'
-import contractAbi from '../../foundry/out/LoanIntent.sol/LoanIntent.json'
+import { rootstockTestnet } from 'viem/chains'
+import loanIntentAbi from 'common/LoanIntent/LoanIntent.json'
 import { Status } from './types';
 
 const privateKey = process.env.PRIVATE_KEY as Hex;
@@ -12,13 +12,13 @@ const account = privateKeyToAccount(privateKey)
 
 const client = createWalletClient({
     account,
-    chain: localhost,
+    chain: rootstockTestnet,
     transport: http()
 }).extend(publicActions)
 
 
 const contract = getContract({
-    abi: contractAbi.abi,
+    abi: loanIntentAbi.abi,
     address: contractAddress,
     client,
 })
@@ -44,12 +44,12 @@ async function getBorrowerIntents() {
 async function findSolutions() {
     const lenders = await getLendersIntents();
     const borrowers = await getBorrowerIntents();
-    
+
     const matchedPairs: Array<{ lender: any, borrower: any }> = [];
-    
+
     for (const lender of lenders) {
         for (const borrower of borrowers) {
-            if (lender.tokenAddress === borrower.tokenAddress && 
+            if (lender.tokenAddress === borrower.tokenAddress &&
                 borrower.maxInterest >= lender.minInterest) {
                 matchedPairs.push({ lender, borrower });
                 borrowers.splice(borrowers.indexOf(borrower), 1);

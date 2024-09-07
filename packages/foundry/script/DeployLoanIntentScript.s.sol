@@ -11,8 +11,10 @@ contract DeployERC20TokensScript is Script {
 
         vm.startBroadcast(privateKey);
 
-        new LoanIntent(loanDuration);
+        LoanIntent loanIntent = new LoanIntent(loanDuration);
 
         vm.stopBroadcast();
+
+        console.log("LoanIntent address: ", address(loanIntent));
     }
 }
