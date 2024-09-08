@@ -76,9 +76,27 @@ yarn workspace foundry deployLoanIntent
 yarn workspace foundry deployLoanIntent --legacy --broadcast
 ```
 
-### Feedback using RootStock
+## Feedback using RootStock
 Rootstock was easy to incorporate as the chain is EVM compatible.Rootstock often has lower transaction fees, which makes it more accessible for smaller users or for those running complex dApps that require frequent interactions. The Rootstock testnet faucets were easy to use, but the transactions took longer time than expected.
 
 
-### Video
+## Demo Video
 https://www.youtube.com/watch?v=MWfCqMqaNmE
+
+## Screenshots
+
+
+![Home](https://github.com/user-attachments/assets/607c194e-7b06-4266-854f-f5150e3f072e)
+
+![LoanIntent-Market](https://github.com/user-attachments/assets/12038fab-a0ff-42e4-8d22-8416f4e2737e)
+
+![BorrowerIntent](https://github.com/user-attachments/assets/069fa657-8d37-4a98-b5fc-6754013b9f2f)
+
+![LoanIntent](https://github.com/user-attachments/assets/7b38ea1a-b1ee-47b5-9221-3a610104ee32)
+
+![Claim](https://github.com/user-attachments/assets/19b01b4e-f25c-421f-8d45-61860ad0e185)
+
+![Repay](https://github.com/user-attachments/assets/4d985fb0-6317-42a3-8f62-9fa5b8ff2c94)
+
+
+
