@@ -81,14 +81,13 @@ Rootstock was easy to incorporate as the chain is EVM compatible.Rootstock often
 
 
 ## Demo Video
-https://www.youtube.com/watch?v=MWfCqMqaNmE
+
+[![LoanIntentDemoVideo](https://github.com/user-attachments/assets/12038fab-a0ff-42e4-8d22-8416f4e2737e)](https://www.youtube.com/watch?v=MWfCqMqaNmE)
 
 ## Screenshots
 
 
 ![Home](https://github.com/user-attachments/assets/607c194e-7b06-4266-854f-f5150e3f072e)
-
-![LoanIntent-Market](https://github.com/user-attachments/assets/12038fab-a0ff-42e4-8d22-8416f4e2737e)
 
 ![BorrowerIntent](https://github.com/user-attachments/assets/069fa657-8d37-4a98-b5fc-6754013b9f2f)
 
